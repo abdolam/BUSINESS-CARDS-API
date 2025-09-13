@@ -1,0 +1,47 @@
+.u-collapse {
+  overflow: hidden;
+  transition: max-height 550ms ease-in-out, opacity 550ms ease-in-out,
+    transform 550ms ease-in-out;
+  will-change: max-height, opacity, transform;
+}
+
+.u-collapse[data-open="false"] {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-0.25rem) translateX(2rem); /* push right when hidden */
+  pointer-events: none;
+}
+
+.u-collapse[data-open="true"] {
+  max-height: var(--u-max-h, 70vh);
+  opacity: 1;
+  transform: translateY(0) translateX(0); /* slide back in */
+}
+
+/* Respect motion prefs */
+html.a11y-reduce-motion .u-collapse {
+  transition: none !important;
+  transform: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .u-collapse {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+.u-fade-in-up {
+  animation: fadeInUp 260ms ease-out both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

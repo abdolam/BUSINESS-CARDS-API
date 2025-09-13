@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Satisfy&display=swap");
+@import "./a11y.css";
+@import "./transitions.css";
+@import "./forms.css";
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+html,
+body {
+  overflow-x: hidden;
+}
+.turnstile-slot {
+  min-height: 70px;
+  display: inline-block;
+}

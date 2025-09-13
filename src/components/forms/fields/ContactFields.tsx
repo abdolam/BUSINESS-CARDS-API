@@ -1,0 +1,65 @@
+import { useFormContext } from "react-hook-form";
+
+export default function ContactFields() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label className="u-label" htmlFor="phone">
+          טלפון *
+        </label>
+        <input
+          id="phone"
+          className="u-input"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          dir="ltr"
+          pattern="^0\\d{1,2}-?\\d{7}$"
+          {...register("phone")}
+          aria-invalid={errors?.phone ? true : undefined}
+          aria-describedby={errors?.phone ? "signup-phone-error" : undefined}
+        />
+        {errors?.phone && (
+          <p
+            id="signup-phone-error"
+            role="alert"
+            className="text-red-600 text-xs mt-1"
+          >
+            {String(errors.phone.message)}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label className="u-label" htmlFor="email">
+          דוא"ל *
+        </label>
+        <input
+          id="email"
+          type="email"
+          className="u-input"
+          dir="ltr"
+          autoComplete="email"
+          inputMode="email"
+          {...register("email")}
+          aria-invalid={errors?.email ? true : undefined}
+          aria-describedby={errors?.email ? "signup-email-error" : undefined}
+        />
+        {errors?.email && (
+          <p
+            id="signup-email-error"
+            role="alert"
+            className="text-red-600 text-xs mt-1"
+          >
+            {String(errors.email.message)}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}

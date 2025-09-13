@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg
+  viewBox="0 0 128 128"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-labelledby="logo-title"
+  preserveAspectRatio="xMidYMid meet"
+  focusable="false"
+>
+  <title id="logo-title">CardForge</title>
+
+  <!-- Background gradient for the circular fill -->
+  <defs>
+    <linearGradient id="logo-grad-fill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E0F2FE"/>
+      <stop offset="1" stop-color="#F3E8FF"/>
+    </linearGradient>
+
+    <linearGradient
+      id="logo-grad-1"
+      x1="30.4805" y1="976.8782"
+      x2="102.4805" y2="1048.8782"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="matrix(1 0 0 1 0 -950)"
+    >
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#9333EA"/>
+    </linearGradient>
+
+    <linearGradient
+      id="logo-grad-2"
+      x1="48.185" y1="994.335"
+      x2="88.278" y2="1034.428"
+      gradientUnits="userSpaceOnUse"
+      gradientTransform="matrix(1 0 0 1 0 -950)"
+    >
+      <stop offset="0" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#9333EA"/>
+    </linearGradient>
+
+    <!-- Clip everything to a perfect circle -->
+    <clipPath id="logo-clip">
+      <circle cx="64" cy="64" r="56"/>
+    </clipPath>
+  </defs>
+
+  <!-- Subtle circular background so the icon is truly circular -->
+  <circle cx="64" cy="64" r="56" fill="url(#logo-grad-fill)"/>
+
+  <!-- Outer ring (outside of clip so it remains crisp) -->
+  <circle
+    cx="64" cy="64" r="54"
+    fill="none"
+    stroke="#0EA5E9"
+    stroke-width="6"
+    stroke-opacity="0.08"
+    vector-effect="non-scaling-stroke"
+  />
+
+  <!-- Inner drawing clipped to circle -->
+  <g clip-path="url(#logo-clip)">
+    <path
+      d="M95.1,42.2c-8-10-22-14-36-12c-18,3-30,18-28,36s18,32,36,32c13,0,23-6,30-14"
+      fill="none"
+      stroke="url(#logo-grad-1)"
+      stroke-width="8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      vector-effect="non-scaling-stroke"
+    />
+    <path
+      d="M61.9,49.8v32.9 M61.9,49.8h16.4 M61.9,65.3h13.7"
+      fill="none"
+      stroke="url(#logo-grad-2)"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      vector-effect="non-scaling-stroke"
+    />
+  </g>
+</svg>

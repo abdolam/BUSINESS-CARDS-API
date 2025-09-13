@@ -1,0 +1,87 @@
+html.a11y-high-contrast body {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+html.a11y-high-contrast :is(h1, h2, h3, h4, h5, h6) {
+  color: #000 !important;
+}
+html.a11y-high-contrast a {
+  color: #000 !important;
+  text-decoration: underline !important;
+}
+html.a11y-high-contrast * {
+  border-color: #000 !important;
+  box-shadow: none !important;
+}
+
+html.a11y-blue-contrast body {
+  background: #eaf2ff !important; /* very light blue */
+  color: #0b1f44 !important; /* navy-ish */
+}
+html.a11y-blue-contrast a {
+  color: #072a73 !important;
+  text-decoration: underline;
+}
+html.a11y-blue-contrast * {
+  border-color: #0b1f44 !important;
+}
+
+html.a11y-yellow-contrast body {
+  background: #fff8cc !important; /* pale yellow */
+  color: #111 !important;
+}
+html.a11y-yellow-contrast a {
+  color: #111 !important;
+  text-decoration: underline;
+}
+html.a11y-yellow-contrast * {
+  border-color: #111 !important;
+}
+
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:not(.a11y-reduce-motion) .honor-reduce-motion,
+  html.a11y-reduce-motion * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html.a11y-reading-font body {
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif !important;
+}
+
+html.a11y-underline-links a {
+  text-decoration: underline !important;
+  text-underline-offset: 0.15em;
+}
+
+html.a11y-large-text {
+  font-size: 112.5%;
+}
+
+:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 2px;
+}
+
+html.dark.a11y-high-contrast body {
+  background: #000 !important;
+  color: #fff !important;
+}
+html.dark.a11y-high-contrast a {
+  color: #fff !important;
+  text-decoration: underline !important;
+}
+html.dark.a11y-high-contrast * {
+  border-color: #fff !important;
+  box-shadow: none !important;
+}
