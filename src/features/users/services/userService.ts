@@ -1,5 +1,6 @@
 import type { SignInDto, SignUpDto, User } from "@/types/user";
 import { usersApi as api } from "@/services/http";
+import { getCurrentUserIdFromStorage } from "../auth/helpers";
 
 type LoginResponse =
   | string
@@ -38,7 +39,12 @@ export function signOut() {
 }
 
 export async function getMe() {
-  const { data } = await api.get<User>("/users/me");
+  const id = getCurrentUserIdFromStorage();
+  if (!id) throw new Error("Missing user id in token");
+  // Optional: keep error local so global bridge doesn't redirect
+  const { data } = await api.get<User>(`/users/${id}`, {
+    headers: { "x-local-error": "1" },
+  });
   return data;
 }
 
