@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Sun, Moon, Search, LogIn, LogOut, Menu, X } from "lucide-react";
+import { Sun, Moon, Search, LogIn, LogOut, Menu, X, User } from "lucide-react";
 import LinkButton from "../common/LinkButton";
 import { linksFor } from "@/config/navLinks";
 import { useAuth } from "@/features/users/auth/useAuth";
@@ -57,7 +57,7 @@ const Header = () => {
         bg-gradient-to-b from-white to-muted-50
         dark:from-muted-900 dark:to-muted-800/60
         backdrop-blur-md border-b border-muted-100 dark:border-muted-800
-        shadow-soft py-3
+        shadow-soft py-2
       "
     >
       <div className="container mx-auto px-3 md:px-6">
@@ -65,7 +65,7 @@ const Header = () => {
           <div className="flex items-center gap-3">
             <span className="flex items-center font-bold text-lg md:text-xl tracking-tight text-muted-900 dark:text-white">
               <Brand className="w-20" />
-              <span className="py-3 font-satisfy text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="p-3 font-satisfy text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 CardForge
               </span>
             </span>
@@ -82,6 +82,7 @@ const Header = () => {
                 );
               })}
           </nav>
+
           <div className="flex justify-end items-center gap-2 md:gap-3">
             <div className="relative" ref={searchRef}>
               <Button
@@ -113,6 +114,19 @@ const Header = () => {
                 </Button>
               )}
             </div>
+
+            {!isGuest && (
+              <LinkButton
+                to="/me"
+                variant="soft"
+                className="h-10 w-10 p-0 rounded-full"
+                aria-label="אזור אישי"
+                title="אזור אישי"
+              >
+                <User className="w-5 h-5" />
+              </LinkButton>
+            )}
+
             <Button
               variant="soft"
               size="sm"
@@ -159,6 +173,12 @@ const Header = () => {
                 >
                   צור קשר
                 </LinkButton>
+
+                {!isGuest && (
+                  <LinkButton to="/me" onClick={() => setOpen(false)}>
+                    אזור אישי
+                  </LinkButton>
+                )}
 
                 {isGuest ? (
                   <LinkButton

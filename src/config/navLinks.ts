@@ -12,11 +12,13 @@ const ROLE_LINKS: Record<Role, NavItem[]> = {
   ],
   user: [
     { to: "/", label: "דף הבית" },
+    { to: "/me", label: "אזור אישי" },
     { to: "/favorites", label: "מועדפים" },
     { to: "/about", label: "אודות" },
   ],
   business: [
     { to: "/", label: "דף הבית" },
+    { to: "/me", label: "אזור אישי" },
     { to: "/create-card", label: "צור כרטיס" },
     { to: "/favorites", label: "מועדפים" },
     { to: "/my-cards", label: "כרטיסים שלי" },
@@ -24,6 +26,7 @@ const ROLE_LINKS: Record<Role, NavItem[]> = {
   ],
   admin: [
     { to: "/", label: "דף הבית" },
+    { to: "/me", label: "אזור אישי" },
     { to: "/create-card", label: "צור כרטיס" },
     { to: "/favorites", label: "מועדפים" },
     { to: "/my-cards", label: "כרטיסים שלי" },

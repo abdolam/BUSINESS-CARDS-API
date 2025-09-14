@@ -1,4 +1,3 @@
-// src/components/common/Brand.tsx
 import { Link } from "react-router-dom";
 import CfLogo from "./logo";
 

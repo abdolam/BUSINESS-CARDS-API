@@ -12,7 +12,6 @@ type LoginResponse =
     };
 
 export async function signIn(dto: SignInDto): Promise<string> {
-  // Send only what the backend expects to avoid validator rejects & CORS preflight
   const payload = { email: dto.email, password: dto.password };
 
   const { data } = await api.post<LoginResponse>("/users/login", payload);
@@ -62,6 +61,15 @@ export async function deleteUser(id: string) {
   await api.delete(`/users/${id}`);
 }
 
+export async function changePassword(id: string, dto: { password: string }) {
+  const { data } = await api.put(`/users/${id}/password`, dto);
+  return data;
+}
+
+export async function changeEmail(id: string, email: string) {
+  return updateUser(id, { email } as Partial<User>);
+}
+
 export default {
   signIn,
   signUp,
@@ -71,4 +79,6 @@ export default {
   getAllUsers,
   updateUser,
   deleteUser,
+  changePassword,
+  changeEmail,
 };

@@ -1,4 +1,3 @@
-// src/app/routes/App.tsx
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import Home from "../../features/cards/pages/Home";
@@ -6,7 +5,6 @@ import About from "./About";
 import NotFound from "./NotFound";
 import { useIsFetching } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-// ⬇️ replace Splash with LoadingOverlay
 import LoadingOverlay from "@/components/common/LoadingOverlay";
 import Layout from "../../components/layout/Layout";
 import CreateCard from "../../features/cards/pages/CreateCard";
@@ -36,6 +34,7 @@ import {
 } from "@/features/users/auth/permissions";
 import CardDetailsPage from "@/features/cards/pages/CardDetailsPage";
 import Accessibility from "./Accessibility";
+import PersonalAreaPage from "@/features/users/pages/PersonalAreaPage";
 
 function Guard({
   allow,
@@ -105,6 +104,15 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
+              <Route
+                path="/me"
+                element={
+                  <Guard allow={guards.anyAuth}>
+                    <PersonalAreaPage />
+                  </Guard>
+                }
+              />
+
               <Route
                 path="/create-card"
                 element={
