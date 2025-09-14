@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
@@ -23,6 +23,11 @@ import { signUpSchema } from "@/features/users/validators/userSchemas";
 import type { SignUpDto, User } from "@/types/user";
 import { DEFAULT_IMAGE } from "@/features/users/constants/userDefaults";
 import { useNavigate } from "react-router-dom";
+import PersonalAreaNav, {
+  type PersonalTab,
+} from "@/features/users/components/PersonalAreaNav";
+import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
+import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
 
 type UpdateFormValues = Omit<SignUpDto, "password"> & {
   // not rendered; kept optional so forked schema won’t complain
@@ -55,6 +60,7 @@ export default function PersonalAreaPage() {
   const { success, error } = useToast();
   const nav = useNavigate();
   const qc = useQueryClient();
+  const [tab, setTab] = useState<PersonalTab>("profile");
   const [submitting, setSubmitting] = useState(false);
   // Reuse existing signup schema, but make password fields optional for updates
   const updateSchema: Joi.ObjectSchema = useMemo(
@@ -205,55 +211,90 @@ export default function PersonalAreaPage() {
 
   return (
     <main className="container mx-auto px-4 py-8" dir="rtl">
+      <h1 className="text-xl font-semibold mb-3">אזור אישי</h1>
+      <PersonalAreaNav value={tab} onChange={setTab} />
       <LoadingOverlay open={submitting || updateMutation.isPending} />
-      <h1 className="text-xl font-semibold mb-4">אזור אישי</h1>
+      {tab === "profile" && (
+        <FormProvider {...methods}>
+          <form
+            className="space-y-5 max-w-3xl"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+          >
+            <NameFields />
+            <ContactFields />
+            <ImageFields />
+            <AddressFields />
+            <BusinessToggle />
 
-      <FormProvider {...methods}>
-        <form
-          className="space-y-5 max-w-3xl"
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-        >
-          <NameFields />
-          <ContactFields />
-          <ImageFields />
-          <AddressFields />
-          <BusinessToggle />
+            <ActionsBar
+              submitting={submitting || updateMutation.isPending}
+              canSubmit
+              isValid={formState.isValid}
+              isSubmitting={formState.isSubmitting}
+              onCancel={() => nav(-1)}
+              submitLabel="שמור שינויים"
+            />
+          </form>
+        </FormProvider>
+      )}
 
-          <ActionsBar
-            submitting={submitting || updateMutation.isPending}
-            canSubmit={true}
-            isValid={formState.isValid}
-            isSubmitting={formState.isSubmitting}
-            onCancel={() => nav(-1)}
-            submitLabel="שמור שינויים"
+      {tab === "email" && me && (
+        <section className="max-w-lg">
+          <ChangeEmailForm
+            userId={me._id}
+            currentEmail={me.email}
+            onDone={() => setTab("profile")}
           />
-        </form>
-      </FormProvider>
+        </section>
+      )}
 
-      <hr className="my-8 border-muted-200 dark:border-muted-700" />
+      {tab === "password" && me && (
+        <section className="max-w-lg">
+          <ChangePasswordForm
+            userId={me._id}
+            onDone={() => setTab("profile")}
+          />
+        </section>
+      )}
 
-      <section className="max-w-3xl">
-        <h2 className="text-lg font-semibold mb-2 text-red-600 dark:text-red-400">
-          מחיקת חשבון
-        </h2>
-        <p className="text-sm text-muted-700 dark:text-muted-300 mb-3">
-          מחיקת החשבון תסיר את כל הנתונים המשויכים אליך (כולל כרטיסים ולייקים).
-          פעולה זו אינה הפיכה.
-        </p>
-        <button
-          type="button"
-          className="u-btn u-btn-danger"
-          onClick={() => {
-            if (window.confirm("למחוק את החשבון לצמיתות?")) {
-              deleteMutation.mutate();
-            }
-          }}
-          disabled={deleteMutation.isPending}
-        >
-          {deleteMutation.isPending ? "מוחק…" : "מחק חשבון"}
-        </button>
-      </section>
+      {tab === "upgrade" && (
+        <section className="max-w-lg space-y-4">
+          <p className="text-sm text-muted-700 dark:text-muted-300">
+            שדרג את החשבון לעסקי כדי לפתוח יצירת כרטיסים וכלי ניהול.
+          </p>
+          <FormProvider {...methods}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+              className="space-y-4"
+            >
+              <BusinessToggle />
+              <ActionsBar
+                submitting={submitting || updateMutation.isPending}
+                canSubmit
+                isValid={formState.isValid}
+                isSubmitting={formState.isSubmitting}
+                onCancel={() => setTab("profile")}
+                submitLabel="שמור"
+              />
+            </form>
+          </FormProvider>
+        </section>
+      )}
+
+      <button
+        type="button"
+        className="u-btn u-btn-danger"
+        onClick={() => {
+          if (window.confirm("למחוק את החשבון לצמיתות?")) {
+            deleteMutation.mutate();
+          }
+        }}
+        disabled={deleteMutation.isPending}
+      >
+        {deleteMutation.isPending ? "מוחק…" : "מחק חשבון"}
+      </button>
     </main>
   );
 }

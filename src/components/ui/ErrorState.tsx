@@ -33,13 +33,10 @@ export default function ErrorState({
       <div className="w-full max-w-xl text-center">
         {/* Logo + Brand */}
         <div className="flex flex-col items-center gap-3 mb-6">
-          <img
-            src="/logo.svg"
-            alt=""
-            className="w-16 h-16 rounded-md shadow-sm"
-          />
           <div className="text-2xl font-bold text-muted-900 dark:text-white">
-            <Brand />
+            <div className="scale-150">
+              <Brand />
+            </div>
           </div>
         </div>
 

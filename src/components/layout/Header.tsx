@@ -17,8 +17,9 @@ const Header = () => {
   const { role, isGuest, logout } = useAuth();
   const navItems = linksFor(role);
   const headerNav = navItems.filter(
-    (i) => i.to !== "/login" && i.to !== "/register"
+    (i) => i.to !== "/login" && i.to !== "/register" && i.to !== "/me"
   );
+
   const searchRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const { pathname } = useLocation();
@@ -108,24 +109,24 @@ const Header = () => {
                   <span className="ml-2">התחברות / הרשמה</span>
                 </LinkButton>
               ) : (
-                <Button onClick={logout} variant="soft" className="h-10 px-4">
-                  <LogOut className="w-5 h-5" />
-                  <span className="ml-2">יציאה</span>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <LinkButton
+                    to="/me"
+                    variant="soft"
+                    className="h-10 w-10 p-0 rounded-full"
+                    aria-label="אזור אישי"
+                    title="אזור אישי"
+                  >
+                    <User className="w-5 h-5" />
+                  </LinkButton>
+
+                  <Button onClick={logout} variant="soft" className="h-10 px-4">
+                    <LogOut className="w-5 h-5" />
+                    <span className="ml-2">יציאה</span>
+                  </Button>
+                </div>
               )}
             </div>
-
-            {!isGuest && (
-              <LinkButton
-                to="/me"
-                variant="soft"
-                className="h-10 w-10 p-0 rounded-full"
-                aria-label="אזור אישי"
-                title="אזור אישי"
-              >
-                <User className="w-5 h-5" />
-              </LinkButton>
-            )}
 
             <Button
               variant="soft"
@@ -141,6 +142,7 @@ const Header = () => {
                 <Moon className="w-5 h-5" />
               )}
             </Button>
+
             <Button
               variant="soft"
               size="sm"
@@ -173,12 +175,6 @@ const Header = () => {
                 >
                   צור קשר
                 </LinkButton>
-
-                {!isGuest && (
-                  <LinkButton to="/me" onClick={() => setOpen(false)}>
-                    אזור אישי
-                  </LinkButton>
-                )}
 
                 {isGuest ? (
                   <LinkButton

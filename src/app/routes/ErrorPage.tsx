@@ -11,5 +11,9 @@ export default function ErrorPage() {
   const message = state?.message ?? params.get("msg") ?? undefined;
   const title = state?.title ?? params.get("title") ?? "שגיאה";
 
-  return <ErrorState message={message ?? undefined} title={title} />;
+  return (
+    <div>
+      <ErrorState message={message ?? undefined} title={title} />
+    </div>
+  );
 }
