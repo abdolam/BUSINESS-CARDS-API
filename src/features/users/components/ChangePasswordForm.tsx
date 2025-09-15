@@ -47,7 +47,7 @@ export default function ChangePasswordForm({ userId, onDone }: Props) {
   return (
     <FormProvider {...methods}>
       <form
-        className="space-y-4 max-w-lg"
+        className="space-y-4"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
         dir="rtl"

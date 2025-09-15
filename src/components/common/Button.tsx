@@ -1,6 +1,12 @@
 import clsx from "clsx";
 
-type Variant = "primary" | "secondary" | "ghost" | "outline" | "soft";
+type Variant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "outline"
+  | "soft"
+  | "danger";
 type Size = "xs" | "sm" | "md" | "lg";
 
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -26,6 +32,8 @@ const byVariant: Record<Variant, string> = {
   soft:
     "border border-primary-300 text-primary-600 hover:bg-primary-50 " +
     "dark:border-primary-600 dark:text-primary-300 dark:hover:bg-primary-900",
+
+  danger: "bg-red-600 text-white hover:bg-red-700 shadow-soft",
 };
 
 const bySize: Record<Size, string> = {

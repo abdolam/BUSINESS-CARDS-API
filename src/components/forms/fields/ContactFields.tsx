@@ -1,43 +1,47 @@
 import { useFormContext } from "react-hook-form";
 
-type Props = { showEmail?: boolean };
+type Props = { showEmail?: boolean; showPhone?: boolean; className?: string };
 
-export default function ContactFields({ showEmail = true }: Props) {
+export default function ContactFields({
+  showEmail = true,
+  showPhone = true,
+  className,
+}: Props) {
   const {
     register,
     formState: { errors },
   } = useFormContext();
 
   return (
-    <div
-      className={`grid grid-cols-1 ${showEmail ? "md:grid-cols-2" : ""} gap-4`}
-    >
-      <div>
-        <label className="u-label" htmlFor="phone">
-          טלפון *
-        </label>
-        <input
-          id="phone"
-          className="u-input"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          dir="ltr"
-          pattern="^0\\d{1,2}-?\\d{7}$"
-          {...register("phone")}
-          aria-invalid={errors?.phone ? true : undefined}
-          aria-describedby={errors?.phone ? "signup-phone-error" : undefined}
-        />
-        {errors?.phone && (
-          <p
-            id="signup-phone-error"
-            role="alert"
-            className="text-red-600 text-xs mt-1"
-          >
-            {String(errors.phone.message)}
-          </p>
-        )}
-      </div>
+    <div className={className}>
+      {showPhone && (
+        <div>
+          <label className="u-label" htmlFor="phone">
+            טלפון *
+          </label>
+          <input
+            id="phone"
+            className="u-input"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            dir="ltr"
+            pattern="^0\\d{1,2}-?\\d{7}$"
+            {...register("phone")}
+            aria-invalid={errors?.phone ? true : undefined}
+            aria-describedby={errors?.phone ? "signup-phone-error" : undefined}
+          />
+          {errors?.phone && (
+            <p
+              id="signup-phone-error"
+              role="alert"
+              className="text-red-600 text-xs mt-1"
+            >
+              {String(errors.phone.message)}
+            </p>
+          )}
+        </div>
+      )}
 
       {showEmail && (
         <div>

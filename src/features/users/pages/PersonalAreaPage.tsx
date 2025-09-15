@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
@@ -28,6 +28,7 @@ import PersonalAreaNav, {
 } from "@/features/users/components/PersonalAreaNav";
 import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
 import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
+import DeleteAccountSection from "../components/DeleteAccountSection.tsx";
 
 type UpdateFormValues = Omit<SignUpDto, "password"> & {
   // not rendered; kept optional so forked schema won’t complain
@@ -57,19 +58,32 @@ function loadImageOk(url: string, timeout = 5000): Promise<boolean> {
 }
 
 export default function PersonalAreaPage() {
-  const confirmRef = useRef<string>("");
   const { success, error } = useToast();
   const nav = useNavigate();
   const qc = useQueryClient();
   const [tab, setTab] = useState<PersonalTab>("info");
   const [submitting, setSubmitting] = useState(false);
-  const updateSchema: Joi.ObjectSchema = useMemo(
-    () =>
-      signUpSchema.fork(["password", "confirmPassword"], (s) =>
+  const updateSchema: Joi.ObjectSchema = useMemo(() => {
+    return signUpSchema
+      .fork(["password", "confirmPassword"], (s) =>
         (s as Joi.StringSchema).optional().allow("")
-      ),
-    []
-  );
+      )
+      .fork(
+        [
+          "email",
+          "image.url",
+          "image.alt",
+          "address.state",
+          "address.country",
+          "address.city",
+          "address.street",
+          "address.houseNumber",
+          "address.zip",
+          "isBusiness",
+        ],
+        (s) => (s as Joi.AnySchema).optional()
+      );
+  }, []);
 
   const methods = useForm<UpdateFormValues>({
     resolver: joiResolver(updateSchema, { abortEarly: false }),
@@ -210,8 +224,8 @@ export default function PersonalAreaPage() {
   }
 
   return (
-    <main className="container mx-auto px-4 py-8" dir="rtl">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <main className="container mx-auto py-20" dir="rtl">
+      <div className="max-w-2xl mx-auto space-y-10">
         <h1 className="text-xl font-semibold">אזור אישי</h1>
         <PersonalAreaNav value={tab} onChange={setTab} />
         <LoadingOverlay open={submitting || updateMutation.isPending} />
@@ -219,12 +233,23 @@ export default function PersonalAreaPage() {
         {tab === "info" && (
           <FormProvider {...methods}>
             <form
-              className="space-y-6 max-w-3xl mx-auto"
+              className="space-y-8 mx-auto"
               onSubmit={handleSubmit(onSubmit)}
               noValidate
             >
-              <NameFields />
-              <ContactFields showEmail={false} />
+              <NameFields
+                showMiddle={false}
+                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <NameFields showFirst={false} showLast={false} />
+                <ContactFields
+                  showEmail={false}
+                  showPhone={true}
+                  className=" md:grid-cols-1 gap-4"
+                />
+              </div>
+
               <ImageFields />
               <ActionsBar
                 submitting={submitting || updateMutation.isPending}
@@ -239,7 +264,7 @@ export default function PersonalAreaPage() {
         )}
 
         {tab === "address" && (
-          <section className="max-w-3xl mx-auto">
+          <section className="mx-auto">
             <FormProvider {...methods}>
               <form
                 className="space-y-6"
@@ -261,7 +286,7 @@ export default function PersonalAreaPage() {
         )}
 
         {tab === "email" && me && (
-          <section className="max-w-lg mx-auto">
+          <section className="mx-auto">
             <ChangeEmailForm
               userId={me._id}
               currentEmail={me.email}
@@ -271,7 +296,7 @@ export default function PersonalAreaPage() {
         )}
 
         {tab === "password" && me && (
-          <section className="max-w-lg mx-auto">
+          <section className="mx-auto">
             <ChangePasswordForm userId={me._id} onDone={() => setTab("info")} />
           </section>
         )}
@@ -302,48 +327,10 @@ export default function PersonalAreaPage() {
         )}
 
         {tab === "delete" && (
-          <section className="max-w-3xl mx-auto space-y-3">
-            <h2 className="text-lg font-semibold text-red-600 dark:text-red-400">
-              מחיקת חשבון
-            </h2>
-            <p className="text-sm text-muted-700 dark:text-muted-300">
-              מחיקת החשבון תסיר את כל הנתונים המשויכים אליך (כולל כרטיסים
-              ולייקים). פעולה זו אינה הפיכה.
-            </p>
-            <label className="u-label" htmlFor="deleteConfirm">
-              כדי להמשיך, הקלד/י: <strong>DELETE</strong>
-            </label>
-            <input
-              id="deleteConfirm"
-              className="u-input max-w-xs"
-              onChange={(e) => (confirmRef.current = e.target.value)}
-              aria-describedby="delete-help"
-            />
-            <p
-              id="delete-help"
-              className="text-xs text-muted-600 dark:text-muted-400"
-            >
-              יש להקליד בדיוק את המילה DELETE באנגלית.
-            </p>
-            <div className="pt-1">
-              <button
-                type="button"
-                className="u-btn u-btn-danger"
-                onClick={() => {
-                  if (confirmRef.current === "DELETE") {
-                    if (window.confirm("למחוק את החשבון לצמיתות?")) {
-                      deleteMutation.mutate();
-                    }
-                  }
-                }}
-                disabled={
-                  deleteMutation.isPending || confirmRef.current !== "DELETE"
-                }
-              >
-                {deleteMutation.isPending ? "מוחק…" : "מחק חשבון"}
-              </button>
-            </div>
-          </section>
+          <DeleteAccountSection
+            pending={deleteMutation.isPending}
+            onConfirmDelete={() => deleteMutation.mutate()}
+          />
         )}
       </div>
     </main>

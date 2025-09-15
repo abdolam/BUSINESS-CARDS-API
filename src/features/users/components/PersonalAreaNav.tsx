@@ -23,7 +23,7 @@ const TABS: { key: PersonalTab; label: string }[] = [
 export default function PersonalAreaNav({ value, onChange }: Props) {
   return (
     <nav
-      className="mb-6 flex flex-wrap gap-2"
+      className="mb-6 flex justify-between flex-wrap gap-2"
       aria-label="תפריט אזור אישי"
       dir="rtl"
     >
@@ -34,7 +34,7 @@ export default function PersonalAreaNav({ value, onChange }: Props) {
             key={t.key}
             type="button"
             onClick={() => onChange(t.key)}
-            className={`px-3 py-2 text-sm rounded-md border focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
+            className={`flex-auto px-3 py-2 text-sm rounded-md border focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
               ${
                 selected
                   ? "bg-blue-600 text-white border-blue-600"

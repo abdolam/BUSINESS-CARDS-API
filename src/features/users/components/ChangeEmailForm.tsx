@@ -55,7 +55,7 @@ export default function ChangeEmailForm({
   return (
     <FormProvider {...methods}>
       <form
-        className="space-y-4 max-w-md"
+        className="space-y-4 max-w-full"
         onSubmit={handleSubmit(onSubmit)}
         noValidate
         dir="rtl"

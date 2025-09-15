@@ -183,8 +183,8 @@ export default function SignUpForm() {
         aria-label="טופס הרשמה"
         noValidate
       >
-        <NameFields />
-        <ContactFields />
+        <NameFields className="grid grid-cols-1 md:grid-cols-3 gap-4" />
+        <ContactFields className="grid grid-cols-1 md:grid-cols-2 gap-4" />
         <PasswordFields />
         <ImageFields />
         <AddressFields />
