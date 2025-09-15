@@ -126,10 +126,6 @@ export default function AddressFields() {
           className="u-input"
           autoComplete="address-line2"
           {...register("address.houseNumber", { valueAsNumber: true })}
-          aria-invalid={houseNumberMsg ? true : undefined}
-          aria-describedby={
-            houseNumberMsg ? "signup-houseNumber-error" : undefined
-          }
         />
         {houseNumberMsg && (
           <p
@@ -151,9 +147,9 @@ export default function AddressFields() {
           type="number"
           className="u-input"
           autoComplete="postal-code"
-          {...register("address.zip")}
-          aria-invalid={zipMsg ? true : undefined}
-          aria-describedby={zipMsg ? "signup-zip-error" : undefined}
+          {...register("address.zip", {
+            setValueAs: (v) => (v === "" || v === null ? undefined : Number(v)),
+          })}
         />
         {zipMsg && (
           <p

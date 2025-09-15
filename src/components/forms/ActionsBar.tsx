@@ -13,7 +13,6 @@ type Props = {
 export default function ActionsBar({
   submitting,
   canSubmit,
-  isValid,
   isSubmitting,
   onCancel,
   submitLabel = "שמירה",
@@ -24,7 +23,7 @@ export default function ActionsBar({
       <FormButton
         type="submit"
         className="u-btn u-btn-submit"
-        disabled={!isValid || submitting || !canSubmit || isSubmitting}
+        disabled={submitting || !canSubmit || isSubmitting}
       >
         {submitLabel}
       </FormButton>

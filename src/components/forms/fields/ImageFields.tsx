@@ -1,4 +1,4 @@
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 type ImageErrors = {
   image?: {
@@ -8,11 +8,13 @@ type ImageErrors = {
 };
 
 export default function ImageFields() {
-  const { register, formState } = useFormContext();
+  const { register, formState, control } = useFormContext();
   const e = formState.errors as unknown as ImageErrors;
 
   const urlMsg = e.image?.url?.message;
   const altMsg = e.image?.alt?.message;
+
+  const url: string = useWatch({ control, name: "image.url" }) || "";
 
   return (
     <fieldset className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -38,6 +40,16 @@ export default function ImageFields() {
           >
             {urlMsg}
           </p>
+        )}
+        {url && (
+          <div className="mt-3">
+            <img
+              src={url}
+              alt=""
+              className="h-24 w-24 rounded-full object-cover border"
+              aria-hidden
+            />
+          </div>
         )}
       </div>
 

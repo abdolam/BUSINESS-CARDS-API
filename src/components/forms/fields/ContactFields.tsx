@@ -1,13 +1,17 @@
 import { useFormContext } from "react-hook-form";
 
-export default function ContactFields() {
+type Props = { showEmail?: boolean };
+
+export default function ContactFields({ showEmail = true }: Props) {
   const {
     register,
     formState: { errors },
   } = useFormContext();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div
+      className={`grid grid-cols-1 ${showEmail ? "md:grid-cols-2" : ""} gap-4`}
+    >
       <div>
         <label className="u-label" htmlFor="phone">
           טלפון *
@@ -35,31 +39,33 @@ export default function ContactFields() {
         )}
       </div>
 
-      <div>
-        <label className="u-label" htmlFor="email">
-          דוא"ל *
-        </label>
-        <input
-          id="email"
-          type="email"
-          className="u-input"
-          dir="ltr"
-          autoComplete="email"
-          inputMode="email"
-          {...register("email")}
-          aria-invalid={errors?.email ? true : undefined}
-          aria-describedby={errors?.email ? "signup-email-error" : undefined}
-        />
-        {errors?.email && (
-          <p
-            id="signup-email-error"
-            role="alert"
-            className="text-red-600 text-xs mt-1"
-          >
-            {String(errors.email.message)}
-          </p>
-        )}
-      </div>
+      {showEmail && (
+        <div>
+          <label className="u-label" htmlFor="email">
+            דוא"ל *
+          </label>
+          <input
+            id="email"
+            type="email"
+            className="u-input"
+            dir="ltr"
+            autoComplete="email"
+            inputMode="email"
+            {...register("email")}
+            aria-invalid={errors?.email ? true : undefined}
+            aria-describedby={errors?.email ? "signup-email-error" : undefined}
+          />
+          {errors?.email && (
+            <p
+              id="signup-email-error"
+              role="alert"
+              className="text-red-600 text-xs mt-1"
+            >
+              {String(errors.email.message)}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
