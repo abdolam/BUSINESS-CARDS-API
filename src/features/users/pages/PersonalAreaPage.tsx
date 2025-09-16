@@ -30,9 +30,9 @@ import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
 import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
 import DeleteAccountSection from "../components/DeleteAccountSection.tsx";
 
-type UpdateFormValues = Omit<SignUpDto, "password"> & {
-  // not rendered; kept optional so forked schema won’t complain
+type UpdateFormValues = Omit<SignUpDto, "password" | "address"> & {
   confirmPassword?: string;
+  address: Omit<SignUpDto["address"], "zip"> & { zip?: string | number };
 };
 
 function loadImageOk(url: string, timeout = 5000): Promise<boolean> {
@@ -70,6 +70,7 @@ export default function PersonalAreaPage() {
       )
       .fork(
         [
+          "phone", // ← make phone optional in update flow
           "email",
           "image.url",
           "image.alt",
@@ -92,7 +93,6 @@ export default function PersonalAreaPage() {
     criteriaMode: "firstError",
     shouldFocusError: true,
     defaultValues: {
-      // will be replaced by reset(me) when loaded
       name: { first: "", middle: "", last: "" },
       phone: "",
       email: "",
@@ -103,7 +103,7 @@ export default function PersonalAreaPage() {
         city: "",
         street: "",
         houseNumber: 1,
-        zip: undefined as unknown as number,
+        zip: "",
       },
       isBusiness: false,
     },
@@ -136,9 +136,9 @@ export default function PersonalAreaPage() {
         street: me.address?.street ?? "",
         houseNumber: Number(me.address?.houseNumber ?? 1),
         zip:
-          typeof me.address?.zip === "number"
-            ? me.address.zip
-            : (me.address?.zip as unknown as number),
+          me.address?.zip !== undefined && me.address?.zip !== null
+            ? String(me.address.zip)
+            : "",
       },
       isBusiness: !!me.isBusiness,
     });
@@ -164,7 +164,6 @@ export default function PersonalAreaPage() {
           last: payload.name.last,
         },
         phone: payload.phone,
-        email: payload.email,
         image: safeImage,
         address: {
           state: payload.address.state ?? "",
@@ -177,7 +176,6 @@ export default function PersonalAreaPage() {
               ? payload.address.zip
               : parseInt(String(payload.address.zip), 10),
         },
-        isBusiness: !!payload.isBusiness,
       };
 
       await updateUser(me._id, patch);

@@ -5,7 +5,12 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import { useMutation } from "@tanstack/react-query";
 import { ActionsBar } from "@/components/forms";
 import { useToast, DEFAULT_DURATION } from "@/components/feedback/toastContext";
-import { updateUser } from "@/features/users/services/userService";
+import {
+  getUserById,
+  signOut,
+  updateUser,
+} from "@/features/users/services/userService";
+import { useNavigate } from "react-router-dom";
 
 type Props = { userId: string; currentEmail: string; onDone?: () => void };
 
@@ -23,7 +28,7 @@ export default function ChangeEmailForm({
   onDone,
 }: Props) {
   const { success, error } = useToast();
-
+  const nav = useNavigate();
   const methods = useForm<FormVals>({
     resolver: joiResolver(schema, { abortEarly: false }),
     mode: "onChange",
@@ -35,11 +40,41 @@ export default function ChangeEmailForm({
   const mut = useMutation({
     mutationFn: async (vals: FormVals) => {
       // Rely on server to enforce uniqueness (expect 409 for conflict)
-      return updateUser(userId, { email: vals.email });
+      updateUser(userId, { email: vals.email });
+      const me = await getUserById(userId);
+      const payload = {
+        name: {
+          first: me.name.first,
+          middle: me.name.middle ?? "",
+          last: me.name.last,
+        },
+        phone: me.phone,
+        email: vals.email, // ← new email
+        image: {
+          url: me.image?.url ?? "",
+          alt: me.image?.alt ?? "",
+        },
+        address: {
+          state: me.address?.state ?? "",
+          country: me.address?.country ?? "",
+          city: me.address?.city ?? "",
+          street: me.address?.street ?? "",
+          houseNumber: Number(me.address?.houseNumber ?? 1),
+          zip:
+            typeof me.address?.zip === "number"
+              ? me.address.zip
+              : parseInt(String(me.address?.zip ?? ""), 10) || undefined,
+        },
+      } as const;
+      return updateUser(userId, payload);
     },
     onSuccess: () => {
       success("דוא״ל עודכן בהצלחה", DEFAULT_DURATION.success);
-      onDone?.();
+      signOut();
+      window.setTimeout(() => {
+        // fix: your route is /sign-in (hyphen)
+        nav("/sign-in");
+      }, 300);
     },
     onError: (e: unknown) => {
       const msg =

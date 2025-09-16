@@ -15,7 +15,7 @@ export interface UserAddress {
   city: string;
   street: string;
   houseNumber: number;
-  zip?: number;
+  zip?: number | number;
   _id?: string;
 }
 export interface User {

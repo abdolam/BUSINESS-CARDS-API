@@ -6,7 +6,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast, DEFAULT_DURATION } from "@/components/feedback/toastContext";
 import PasswordFields from "@/components/forms/fields/PasswordFields";
 import { ActionsBar } from "@/components/forms";
-import { changePassword } from "@/features/users/services/userService";
+import { changePassword, signOut } from "@/features/users/services/userService";
+import { useNavigate } from "react-router-dom";
 
 type Props = { userId: string; onDone?: () => void };
 
@@ -24,7 +25,7 @@ const schema = Joi.object<FormVals>({
 
 export default function ChangePasswordForm({ userId, onDone }: Props) {
   const { success, error } = useToast();
-
+  const nav = useNavigate();
   const methods = useForm<FormVals>({
     resolver: joiResolver(schema, { abortEarly: false }),
     mode: "onChange",
@@ -37,7 +38,11 @@ export default function ChangePasswordForm({ userId, onDone }: Props) {
       changePassword(userId, { password: vals.password }),
     onSuccess: () => {
       success("סיסמה עודכנה בהצלחה", DEFAULT_DURATION.success);
-      onDone?.();
+      // logout then redirect
+      signOut(); // logout
+      window.setTimeout(() => {
+        nav("/signin");
+      }, 300); // redirect to signin page
     },
     onError: () => error("עדכון הסיסמה נכשל", DEFAULT_DURATION.error),
   });

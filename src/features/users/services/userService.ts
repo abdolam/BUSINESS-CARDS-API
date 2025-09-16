@@ -36,6 +36,7 @@ export async function signUp(dto: SignUpDto) {
 
 export function signOut() {
   localStorage.removeItem("token");
+  window.dispatchEvent(new Event("auth-changed")); // keep UI/auth state in sync
 }
 
 export async function getMe() {

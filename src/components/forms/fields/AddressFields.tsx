@@ -144,13 +144,15 @@ export default function AddressFields() {
         </label>
         <input
           id="zip"
-          type="number"
+          type="text"
+          inputMode="numeric"
+          pattern="^\d{2,}$"
+          dir="ltr"
           className="u-input"
           autoComplete="postal-code"
-          {...register("address.zip", {
-            setValueAs: (v) => (v === "" || v === null ? undefined : Number(v)),
-          })}
+          {...register("address.zip")}
         />
+
         {zipMsg && (
           <p
             id="signup-zip-error"
