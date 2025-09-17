@@ -41,7 +41,7 @@ export default function ChangePasswordForm({ userId, onDone }: Props) {
       // logout then redirect
       signOut(); // logout
       window.setTimeout(() => {
-        nav("/signin");
+        nav("/sign-in");
       }, 300); // redirect to signin page
     },
     onError: () => error("עדכון הסיסמה נכשל", DEFAULT_DURATION.error),

@@ -23,7 +23,7 @@ export default function SignInPage() {
             לחץ כאן להרשמה
           </Link>
         </p>
-        <div className="text-sm text-center mt-2">
+        <div className="hidden text-sm text-center mt-2">
           <Link
             to="/forgot-password"
             className="text-accent-600 hover:underline"

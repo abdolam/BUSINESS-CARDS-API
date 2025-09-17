@@ -110,16 +110,6 @@ const Header = () => {
                 </LinkButton>
               ) : (
                 <div className="flex items-center gap-2">
-                  <LinkButton
-                    to="/me"
-                    variant="soft"
-                    className="h-10 w-10 p-0 rounded-full"
-                    aria-label="אזור אישי"
-                    title="אזור אישי"
-                  >
-                    <User className="w-5 h-5" />
-                  </LinkButton>
-
                   <Button onClick={logout} variant="soft" className="h-10 px-4">
                     <LogOut className="w-5 h-5" />
                     <span className="ml-2">יציאה</span>
@@ -127,6 +117,26 @@ const Header = () => {
                 </div>
               )}
             </div>
+            <LinkButton
+              to="/me"
+              variant="soft"
+              className="h-10 w-10 p-0 rounded-full"
+              aria-label="אזור אישי"
+              title="אזור אישי"
+            >
+              <User className="w-5 h-5" />
+            </LinkButton>
+
+            <Button
+              variant="soft"
+              size="sm"
+              className="xl:hidden h-10 w-10 p-0 rounded-full"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="תפריט"
+              title="תפריט"
+            >
+              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </Button>
 
             <Button
               variant="soft"
@@ -141,17 +151,6 @@ const Header = () => {
               ) : (
                 <Moon className="w-5 h-5" />
               )}
-            </Button>
-
-            <Button
-              variant="soft"
-              size="sm"
-              className="xl:hidden h-10 w-10 p-0 rounded-full"
-              onClick={() => setOpen((v) => !v)}
-              aria-label="תפריט"
-              title="תפריט"
-            >
-              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
         </div>
