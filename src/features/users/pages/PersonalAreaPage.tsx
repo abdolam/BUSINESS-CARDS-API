@@ -8,7 +8,6 @@ import {
   ContactFields,
   ImageFields,
   AddressFields,
-  BusinessToggle,
   ActionsBar,
 } from "@/components/forms";
 import LoadingOverlay from "@/components/common/LoadingOverlay";
@@ -18,6 +17,7 @@ import {
   updateUser,
   deleteUser,
   signOut,
+  toggleUserStatus,
 } from "@/features/users/services/userService";
 import { signUpSchema } from "@/features/users/validators/userSchemas";
 import type { SignUpDto, User } from "@/types/user";
@@ -26,8 +26,8 @@ import { useNavigate } from "react-router-dom";
 import PersonalAreaNav, {
   type PersonalTab,
 } from "@/features/users/components/PersonalAreaNav";
-import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
-import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
+// import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
+// import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
 import DeleteAccountSection from "../components/DeleteAccountSection.tsx";
 
 type UpdateFormValues = Omit<SignUpDto, "password" | "address"> & {
@@ -70,7 +70,7 @@ export default function PersonalAreaPage() {
       )
       .fork(
         [
-          "phone", // ← make phone optional in update flow
+          "phone",
           "email",
           "image.url",
           "image.alt",
@@ -144,7 +144,7 @@ export default function PersonalAreaPage() {
     });
   }, [me, reset]);
 
-  // Update profile
+  // Update profile (PUT) — as-is
   const updateMutation = useMutation({
     mutationFn: async (payload: UpdateFormValues) => {
       if (!me) return;
@@ -156,8 +156,55 @@ export default function PersonalAreaPage() {
         ? { url: rawUrl, alt: rawAlt || DEFAULT_IMAGE.alt }
         : DEFAULT_IMAGE;
 
-      // Build a minimal, allowed patch for the API
       const patch: Partial<User> = {
+        name: {
+          first: payload.name.first,
+          middle: payload.name.middle ?? "",
+          last: payload.name.last,
+        },
+        phone: payload.phone,
+        image: safeImage,
+        address: {
+          state: payload.address.state ?? "",
+          country: payload.address.country,
+          city: payload.address.city,
+          street: payload.address.street,
+          houseNumber: Number(payload.address.houseNumber),
+          zip:
+            typeof payload.address.zip === "number"
+              ? payload.address.zip
+              : parseInt(String(payload.address.zip), 10),
+        },
+        isBusiness: !!payload.isBusiness,
+      };
+
+      await updateUser(me._id, patch); // PUT
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["me"] });
+      qc.invalidateQueries({ queryKey: ["users"] });
+      qc.invalidateQueries({ queryKey: ["cards"] });
+      success("הפרטים נשמרו בהצלחה", DEFAULT_DURATION.success);
+    },
+    onError: () => {
+      error("שמירת הפרטים נכשלה", DEFAULT_DURATION.error);
+    },
+    onSettled: () => setSubmitting(false),
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async (payload: UpdateFormValues) => {
+      if (!me) return;
+
+      const rawUrl = (payload.image?.url ?? "").trim();
+      const rawAlt = (payload.image?.alt ?? "").trim();
+      const ok = rawUrl ? await loadImageOk(rawUrl) : false;
+      const safeImage = ok
+        ? { url: rawUrl, alt: rawAlt || DEFAULT_IMAGE.alt }
+        : DEFAULT_IMAGE;
+
+      // Send full allowed object; server flips isBusiness on PATCH
+      const body: Partial<User> = {
         name: {
           first: payload.name.first,
           middle: payload.name.middle ?? "",
@@ -178,16 +225,15 @@ export default function PersonalAreaPage() {
         },
       };
 
-      await updateUser(me._id, patch);
+      await toggleUserStatus(me._id, body);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["me"] });
       qc.invalidateQueries({ queryKey: ["users"] });
-      qc.invalidateQueries({ queryKey: ["cards"] }); // if name/avatar shows on cards
-      success("הפרטים נשמרו בהצלחה", DEFAULT_DURATION.success);
+      success("סוג החשבון עודכן", DEFAULT_DURATION.success);
     },
     onError: () => {
-      error("שמירת הפרטים נכשלה", DEFAULT_DURATION.error);
+      error("עדכון סוג החשבון נכשל", DEFAULT_DURATION.error);
     },
     onSettled: () => setSubmitting(false),
   });
@@ -209,13 +255,22 @@ export default function PersonalAreaPage() {
 
   const onSubmit = (values: UpdateFormValues) => {
     setSubmitting(true);
-    updateMutation.mutate(values);
+    if (tab === "upgrade") {
+      toggleMutation.mutate(values); // PATCH
+    } else {
+      updateMutation.mutate(values); // PUT
+    }
   };
 
   if (isLoading || !me) {
     return (
       <main className="container mx-auto px-4 py-10" dir="rtl">
-        <LoadingOverlay open />
+        <LoadingOverlay
+          open={
+            submitting || updateMutation.isPending || toggleMutation.isPending
+          }
+        />
+
         <div className="h-64" />
       </main>
     );
@@ -283,7 +338,7 @@ export default function PersonalAreaPage() {
           </section>
         )}
 
-        {tab === "email" && me && (
+        {/*         {tab === "email" && me && (
           <section className="mx-auto">
             <ChangeEmailForm
               userId={me._id}
@@ -297,27 +352,53 @@ export default function PersonalAreaPage() {
           <section className="mx-auto">
             <ChangePasswordForm userId={me._id} onDone={() => setTab("info")} />
           </section>
-        )}
+        )} */}
 
         {tab === "upgrade" && (
           <section className="max-w-lg mx-auto space-y-4">
-            <p className="text-sm text-muted-700 dark:text-muted-300">
-              שדרג את החשבון לעסקי כדי לפתוח יצירת כרטיסים וכלי ניהול.
-            </p>
+            <div className="rounded-md border p-4">
+              <p className="text-sm">
+                מצב חשבון נוכחי:{" "}
+                <strong>{me.isBusiness ? "עסקי" : "רגיל"}</strong>
+              </p>
+              <ul className="list-disc pr-5 text-xs mt-2 space-y-1 text-muted-700 dark:text-muted-300">
+                {me.isBusiness ? (
+                  <>
+                    <li>גישה ליצירה ועריכה של כרטיסים עסקיים.</li>
+                    <li>כלי ניהול מתקדמים: מחיקה, עדכון, ייצוא CSV.</li>
+                    <li>תיוג ונראות ייעודית למשתמשים עסקיים ברחבי המערכת.</li>
+                    <li>תמיכה עתידית בהרשאות מתקדמות וניהול צוות.</li>
+                  </>
+                ) : (
+                  <>
+                    <li>חשבון רגיל: צפייה ושמירה למועדפים בלבד.</li>
+                    <li>אין יצירה/עריכה של כרטיסים עסקיים.</li>
+                    <li>אין כלי ניהול מתקדמים או ייצוא CSV.</li>
+                    <li>ניתן לעבור ל“עסקי” בכל עת ע״י לחיצה על הכפתור מטה.</li>
+                  </>
+                )}
+              </ul>
+            </div>
+
             <FormProvider {...methods}>
               <form
                 onSubmit={handleSubmit(onSubmit)}
                 noValidate
                 className="space-y-4"
               >
-                <BusinessToggle />
                 <ActionsBar
-                  submitting={submitting || updateMutation.isPending}
+                  submitting={
+                    submitting ||
+                    updateMutation.isPending ||
+                    toggleMutation.isPending
+                  }
                   canSubmit
                   isValid={formState.isValid}
                   isSubmitting={formState.isSubmitting}
                   onCancel={() => setTab("info")}
-                  submitLabel="שמור"
+                  submitLabel={
+                    tab === "upgrade" ? "שנה סוג חשבון" : "שמור שינויים"
+                  }
                 />
               </form>
             </FormProvider>

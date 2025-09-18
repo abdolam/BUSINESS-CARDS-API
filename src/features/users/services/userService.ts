@@ -64,6 +64,11 @@ export async function updateUser(id: string, patch: Partial<User>) {
   return data;
 }
 
+export async function toggleUserStatus(id: string, body: Partial<User>) {
+  const { data } = await api.patch<User>(`/users/${id}`, body);
+  return data;
+}
+
 export async function deleteUser(id: string) {
   await api.delete(`/users/${id}`);
 }
@@ -85,6 +90,7 @@ export default {
   getUserById,
   getAllUsers,
   updateUser,
+  toggleUserStatus,
   deleteUser,
   changePassword,
   changeEmail,

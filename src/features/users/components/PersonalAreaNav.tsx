@@ -1,7 +1,7 @@
 export type PersonalTab =
   | "info"
-  | "email"
-  | "password"
+  // | "email"
+  // | "password"
   | "address"
   | "upgrade"
   | "delete";
@@ -13,10 +13,10 @@ type Props = {
 
 const TABS: { key: PersonalTab; label: string }[] = [
   { key: "info", label: "פרטים אישיים" },
-  { key: "email", label: "דוא״ל" },
-  { key: "password", label: "סיסמה" },
+  // { key: "email", label: "דוא״ל" },
+  // { key: "password", label: "סיסמה" },
   { key: "address", label: "כתובת" },
-  { key: "upgrade", label: "שדרוג חשבון" },
+  { key: "upgrade", label: "סוג חשבון" },
   { key: "delete", label: "מחיקת חשבון" },
 ];
 

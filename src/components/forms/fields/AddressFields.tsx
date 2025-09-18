@@ -1,4 +1,4 @@
-import { useFormContext } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 
 type AddressErrors = {
   address?: {
@@ -74,14 +74,26 @@ export default function AddressFields() {
         <label className="u-label" htmlFor="state">
           מחוז/אזור
         </label>
-        <input
-          id="state"
-          className="u-input"
-          autoComplete="address-level1"
-          {...register("address.state")}
-          aria-invalid={stateMsg ? true : undefined}
-          aria-describedby={stateMsg ? "signup-state-error" : undefined}
+
+        <Controller
+          name="address.state"
+          render={({ field, fieldState }) => (
+            <input
+              id="state"
+              className="u-input"
+              autoComplete="address-level1"
+              dir="ltr"
+              value={field.value ?? ""} // ensure controlled
+              onChange={(e) => field.onChange(e.target.value)}
+              onBlur={field.onBlur}
+              aria-invalid={fieldState.error ? true : undefined}
+              aria-describedby={
+                fieldState.error ? "signup-state-error" : undefined
+              }
+            />
+          )}
         />
+
         {stateMsg && (
           <p
             id="signup-state-error"
