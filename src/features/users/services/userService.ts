@@ -74,12 +74,37 @@ export async function deleteUser(id: string) {
 }
 
 export async function changePassword(id: string, dto: { password: string }) {
-  const { data } = await api.put(`/users/${id}/password`, dto);
-  return data;
+  try {
+    // pattern A: /users/:id/password
+    const { data } = await api.put(`/users/${id}/password`, dto);
+    return data;
+  } catch (err: unknown) {
+    const status = (err as { response?: { status?: number } })?.response
+      ?.status;
+    if (status === 404) {
+      // pattern B: /users/password/:id
+      const { data } = await api.put(`/users/password/${id}`, dto);
+      return data;
+    }
+    throw err;
+  }
 }
 
 export async function changeEmail(id: string, email: string) {
-  return updateUser(id, { email } as Partial<User>);
+  try {
+    // pattern A: /users/:id/email
+    const { data } = await api.put(`/users/${id}/email`, { email });
+    return data;
+  } catch (err: unknown) {
+    const status = (err as { response?: { status?: number } })?.response
+      ?.status;
+    if (status === 404) {
+      // pattern B: /users/email/:id
+      const { data } = await api.put(`/users/email/${id}`, { email });
+      return data;
+    }
+    throw err;
+  }
 }
 
 export default {

@@ -1,15 +1,11 @@
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import Joi from "joi";
 import { joiResolver } from "@hookform/resolvers/joi";
 import { useMutation } from "@tanstack/react-query";
 import { ActionsBar } from "@/components/forms";
 import { useToast, DEFAULT_DURATION } from "@/components/feedback/toastContext";
-import {
-  getUserById,
-  signOut,
-  updateUser,
-} from "@/features/users/services/userService";
+import { changeEmail, signOut } from "@/features/users/services/userService";
 import { useNavigate } from "react-router-dom";
 
 type Props = { userId: string; currentEmail: string; onDone?: () => void };
@@ -38,49 +34,19 @@ export default function ChangeEmailForm({
   const { handleSubmit, register, formState } = methods;
 
   const mut = useMutation({
-    mutationFn: async (vals: FormVals) => {
-      // Rely on server to enforce uniqueness (expect 409 for conflict)
-      updateUser(userId, { email: vals.email });
-      const me = await getUserById(userId);
-      const payload = {
-        name: {
-          first: me.name.first,
-          middle: me.name.middle ?? "",
-          last: me.name.last,
-        },
-        phone: me.phone,
-        email: vals.email, // ← new email
-        image: {
-          url: me.image?.url ?? "",
-          alt: me.image?.alt ?? "",
-        },
-        address: {
-          state: me.address?.state ?? "",
-          country: me.address?.country ?? "",
-          city: me.address?.city ?? "",
-          street: me.address?.street ?? "",
-          houseNumber: Number(me.address?.houseNumber ?? 1),
-          zip:
-            typeof me.address?.zip === "number"
-              ? me.address.zip
-              : parseInt(String(me.address?.zip ?? ""), 10) || undefined,
-        },
-      } as const;
-      return updateUser(userId, payload);
-    },
+    mutationFn: async (vals: FormVals) => changeEmail(userId, vals.email),
     onSuccess: () => {
       success("דוא״ל עודכן בהצלחה", DEFAULT_DURATION.success);
       signOut();
       window.setTimeout(() => {
-        // fix: your route is /sign-in (hyphen)
-        nav("/sign-in");
+        nav("/sign-in"); // correct route
       }, 300);
     },
     onError: (e: unknown) => {
+      const status = (e as { response?: { status?: number } })?.response
+        ?.status;
       const msg =
-        (e as { response?: { status?: number } })?.response?.status === 409
-          ? "דוא״ל זה כבר קיים במערכת"
-          : "עדכון הדוא״ל נכשל";
+        status === 409 ? "דוא״ל זה כבר קיים במערכת" : "עדכון הדוא״ל נכשל";
       error(msg, DEFAULT_DURATION.error);
     },
   });

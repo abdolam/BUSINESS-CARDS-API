@@ -26,13 +26,18 @@ import { useNavigate } from "react-router-dom";
 import PersonalAreaNav, {
   type PersonalTab,
 } from "@/features/users/components/PersonalAreaNav";
-// import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
-// import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
+import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
+import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
 import DeleteAccountSection from "../components/DeleteAccountSection.tsx";
 
 type UpdateFormValues = Omit<SignUpDto, "password" | "address"> & {
   confirmPassword?: string;
   address: Omit<SignUpDto["address"], "zip"> & { zip?: string | number };
+};
+
+const cleanOptional = (v: unknown): string => {
+  const s = typeof v === "string" ? v.trim() : "";
+  return s.toLowerCase() === "not defined" ? "" : s;
 };
 
 function loadImageOk(url: string, timeout = 5000): Promise<boolean> {
@@ -130,7 +135,7 @@ export default function PersonalAreaPage() {
       email: me.email,
       image: { url: me.image?.url ?? "", alt: me.image?.alt ?? "" },
       address: {
-        state: me.address?.state ?? "",
+        state: cleanOptional(me.address?.state),
         country: me.address?.country ?? "",
         city: me.address?.city ?? "",
         street: me.address?.street ?? "",
@@ -165,7 +170,7 @@ export default function PersonalAreaPage() {
         phone: payload.phone,
         image: safeImage,
         address: {
-          state: payload.address.state ?? "",
+          state: cleanOptional(me.address?.state),
           country: payload.address.country,
           city: payload.address.city,
           street: payload.address.street,
