@@ -26,8 +26,8 @@ import { useNavigate } from "react-router-dom";
 import PersonalAreaNav, {
   type PersonalTab,
 } from "@/features/users/components/PersonalAreaNav";
-import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
-import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
+// import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
+// import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
 import DeleteAccountSection from "../components/DeleteAccountSection.tsx";
 
 type UpdateFormValues = Omit<SignUpDto, "password" | "address"> & {
@@ -76,7 +76,7 @@ export default function PersonalAreaPage() {
       .fork(
         [
           "phone",
-          "email",
+          // "email",
           "image.url",
           "image.alt",
           "address.state",
@@ -170,7 +170,7 @@ export default function PersonalAreaPage() {
         phone: payload.phone,
         image: safeImage,
         address: {
-          state: cleanOptional(me.address?.state),
+          state: payload.address.state ?? "",
           country: payload.address.country,
           city: payload.address.city,
           street: payload.address.street,
@@ -180,7 +180,6 @@ export default function PersonalAreaPage() {
               ? payload.address.zip
               : parseInt(String(payload.address.zip), 10),
         },
-        isBusiness: !!payload.isBusiness,
       };
 
       await updateUser(me._id, patch); // PUT
