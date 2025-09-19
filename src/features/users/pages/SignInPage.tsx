@@ -4,7 +4,7 @@ import SignInForm from "../components/SignInForm";
 
 export default function SignInPage() {
   return (
-    <div className="flex items-center justify-center bg-gray-50 dark:bg-gray-950 min-h-screen px-4 my-16 md:my-24">
+    <div className="flex items-center justify-center min-h-fit px-4 my-16 md:my-24">
       <motion.main
         dir="rtl"
         className="w-full max-w-md p-6 rounded-xl bg-white dark:bg-gray-900 shadow-lg"

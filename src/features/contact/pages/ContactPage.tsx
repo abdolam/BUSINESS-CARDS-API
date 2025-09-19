@@ -3,7 +3,7 @@ import ContactForm from "../components/ContactForm";
 
 export default function ContactPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 my-16 md:my-24">
+    <div className="flex items-center justify-center min-h-fit px-4 my-16 md:my-24">
       <motion.main
         dir="rtl"
         className="w-full max-w-3xl px-6 py-10 md:py-14 rounded-xl bg-white dark:bg-gray-900 shadow-lg"
