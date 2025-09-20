@@ -31,7 +31,7 @@ const ROLE_LINKS: Record<Role, NavItem[]> = {
     { to: "/favorites", label: "מועדפים" },
     { to: "/my-cards", label: "כרטיסים שלי" },
     { to: "/about", label: "אודות" },
-    { to: "/crm", label: "CRM" }, // admin-only
+    { to: "/crm", label: "CRM" },
   ],
 };
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { TOKEN_KEY, computeState, type AuthState } from "./helpers";
 import { AuthContext, type AuthContextValue } from "./context";
+import { queryClient } from "../services/queryClient";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AuthState>(() =>
@@ -11,15 +12,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(TOKEN_KEY, token);
     setState(computeState(token));
     window.dispatchEvent(new Event("auth-changed"));
+    queryClient.removeQueries({ queryKey: ["me"] });
   };
 
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     setState(computeState(null));
     window.dispatchEvent(new Event("auth-changed"));
-    // Always send the user to Home after logout to avoid stale/error pages
+    queryClient.removeQueries({ queryKey: ["me"] });
     if (location.pathname !== "/") {
-      // avoid adding an extra history entry
       window.history.replaceState(null, "", "/");
       window.dispatchEvent(new PopStateEvent("popstate"));
     }

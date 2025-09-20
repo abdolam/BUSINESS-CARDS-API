@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { forwardRef } from "react";
 
 type Variant =
   | "primary"
@@ -23,16 +24,10 @@ const byVariant: Record<Variant, string> = {
   secondary:
     "bg-muted-100 text-muted-900 hover:bg-muted-200 dark:bg-muted-800 dark:text-white dark:hover:bg-muted-700",
   ghost:
-    "bg-transparent text-primary-300 hover:text-primary-600" +
-    " dark:text-muted-400 dark:hover:text-muted-300",
+    "bg-transparent text-primary-300 hover:text-primary-600 dark:text-muted-400 dark:hover:text-muted-300",
   outline:
-    "border border-muted-300 text-muted-800 hover:bg-muted-100 " +
-    "dark:border-muted-700 dark:text-white dark:hover:bg-muted-800",
-
-  soft:
-    "border border-primary-300 text-primary-600 hover:bg-primary-50 " +
-    "dark:border-primary-600 dark:text-primary-300 dark:hover:bg-primary-900",
-
+    "border border-muted-300 text-muted-800 hover:bg-muted-100 dark:border-muted-700 dark:text-white dark:hover:bg-muted-800",
+  soft: "border border-primary-300 text-primary-600 hover:bg-primary-50 dark:border-primary-600 dark:text-primary-300 dark:hover:bg-primary-900",
   danger: "bg-red-600 text-white hover:bg-red-700 shadow-soft",
 };
 
@@ -43,44 +38,39 @@ const bySize: Record<Size, string> = {
   lg: "px-5 py-3 text-lg",
 };
 
-export default function Button({
-  variant = "soft",
-  size = "md",
-  className,
-  ...props
-}: Props) {
-  return (
+const Button = forwardRef<HTMLButtonElement, Props>(
+  ({ variant = "soft", size = "md", className, ...props }, ref) => {
+    return (
+      <button
+        ref={ref}
+        className={clsx(base, byVariant[variant], bySize[size], className)}
+        {...props}
+      />
+    );
+  }
+);
+
+Button.displayName = "Button";
+export default Button;
+
+export const SearchBoxIcon = forwardRef<HTMLButtonElement, Props>(
+  ({ variant = "ghost", size = "xs", className, ...props }, ref) => (
     <button
+      ref={ref}
       className={clsx(base, byVariant[variant], bySize[size], className)}
       {...props}
     />
-  );
-}
+  )
+);
+SearchBoxIcon.displayName = "SearchBoxIcon";
 
-export function SearchBoxIcon({
-  variant = "ghost",
-  size = "xs",
-  className,
-  ...props
-}: Props) {
-  return (
+export const FormButton = forwardRef<HTMLButtonElement, Props>(
+  (
+    { variant = "primary", size = "md", className, disabled, ...props },
+    ref
+  ) => (
     <button
-      className={clsx(base, byVariant[variant], bySize[size], className)}
-      {...props}
-    />
-  );
-}
-
-export function FormButton({
-  variant = "primary",
-  size = "md",
-  className,
-  disabled,
-  ...props
-}: Props) {
-  return (
-    <button
-      {...props}
+      ref={ref}
       disabled={disabled}
       aria-disabled={disabled || undefined}
       className={clsx(
@@ -90,6 +80,8 @@ export function FormButton({
         "disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none",
         className
       )}
+      {...props}
     />
-  );
-}
+  )
+);
+FormButton.displayName = "FormButton";

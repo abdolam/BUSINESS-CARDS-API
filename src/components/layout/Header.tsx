@@ -8,6 +8,9 @@ import Brand from "../common/Brand";
 import { useLocation } from "react-router-dom";
 import { useOnClickOutside } from "@/hooks/useOnClickOutside";
 import SearchBox from "./SearchBox";
+import { useQuery } from "@tanstack/react-query";
+import { getMe } from "@/features/users/services/userService";
+import { resolveUserRole } from "@/types/roles";
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(
@@ -15,7 +18,20 @@ const Header = () => {
   );
   const [showSearch, setShowSearch] = useState(false);
   const { role, isGuest, logout } = useAuth();
-  const navItems = linksFor(role);
+  const { data: me, refetch } = useQuery({
+    queryKey: ["me"],
+    queryFn: getMe,
+    staleTime: 60_000,
+    refetchOnWindowFocus: false,
+  });
+
+  useEffect(() => {
+    refetch();
+  }, [isGuest, role, refetch]);
+
+  const effectiveRole = resolveUserRole(me, isGuest);
+
+  const navItems = linksFor(effectiveRole);
   const headerNav = navItems.filter(
     (i) => i.to !== "/login" && i.to !== "/register" && i.to !== "/me"
   );
@@ -117,15 +133,6 @@ const Header = () => {
                 </div>
               )}
             </div>
-            <LinkButton
-              to="/me"
-              variant="soft"
-              className="h-10 w-10 p-0 rounded-full"
-              aria-label="אזור אישי"
-              title="אזור אישי"
-            >
-              <User className="w-5 h-5" />
-            </LinkButton>
 
             <Button
               variant="soft"
@@ -138,6 +145,19 @@ const Header = () => {
               {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
 
+            {!isGuest && (
+              <>
+                <LinkButton
+                  to="/me"
+                  variant="soft"
+                  className="h-10 w-10 p-0 rounded-full"
+                  aria-label="אזור אישי"
+                  title="אזור אישי"
+                >
+                  <User className="w-5 h-5" />
+                </LinkButton>
+              </>
+            )}
             <Button
               variant="soft"
               size="sm"
