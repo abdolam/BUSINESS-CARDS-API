@@ -3,8 +3,11 @@ import { Role } from "@/types/roles";
 export const TOKEN_KEY = "token" as const;
 
 export type JwtPayload = {
-  role?: string; // raw from token (could be any string)
+  role?: string; // may be "admin" | "business" | "user" | "guest"
+  isAdmin?: boolean; // normalize common shapes
+  admin?: boolean;
   isBusiness?: boolean;
+  business?: boolean;
   sub?: string;
   uid?: string;
   userId?: string;
@@ -50,21 +53,23 @@ export function parseJwt(token: string): JwtPayload | null {
   }
 }
 
-const KNOWN_ROLES: Role[] = ["guest", "user", "business", "admin"];
-
-function asRole(val: unknown): Role | undefined {
-  if (typeof val !== "string") return undefined;
-  return KNOWN_ROLES.includes(val as Role) ? (val as Role) : undefined;
-}
-
 export function computeState(token: string | null): AuthState {
   const payload = token ? parseJwt(token) : null;
 
-  const explicitRole = asRole(payload?.role);
-  const derivedRole: Role | null =
-    explicitRole ??
-    (payload?.isBusiness ? "business" : undefined) ??
-    (token ? "user" : null);
+  // Prefer explicit role when it matches known roles, but normalize flags too
+  const roleStr = (payload?.role ?? "").toString().toLowerCase();
+  const adminFlag =
+    payload?.isAdmin === true || payload?.admin === true || roleStr === "admin";
+  const businessFlag =
+    payload?.isBusiness === true ||
+    payload?.business === true ||
+    roleStr === "business";
+
+  // Clear priority: admin > business > user > guest
+  let derivedRole: Role | null = null;
+  if (adminFlag) derivedRole = "admin";
+  else if (businessFlag) derivedRole = "business";
+  else if (token) derivedRole = "user";
 
   const isAuthenticated = !!token;
   const isAdmin = derivedRole === "admin";
