@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Home from "../../features/cards/pages/Home";
 import About from "./About";
 import NotFound from "./NotFound";
@@ -35,15 +35,20 @@ import {
 import CardDetailsPage from "@/features/cards/pages/CardDetailsPage";
 import Accessibility from "./Accessibility";
 import PersonalAreaPage from "@/features/users/pages/PersonalAreaPage";
+import GlobalHttpErrorBridge from "@/components/system/GlobalHttpErrorBridge";
 
 function Guard({
   allow,
   children,
+  redirectTo,
 }: {
   allow: boolean;
   children: React.ReactElement;
+  redirectTo?: string; // why: better UX for auth-gated routes
 }) {
-  return allow ? children : <NotFound />;
+  if (allow) return children;
+  if (redirectTo) return <Navigate to={redirectTo} replace />;
+  return <NotFound />;
 }
 
 function App() {
@@ -90,7 +95,6 @@ function App() {
 
   return (
     <>
-      {/* replaced <Splash /> */}
       <LoadingOverlay open={show} />
 
       <ToastProvider>
@@ -100,6 +104,7 @@ function App() {
             import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined
           }
         >
+          <GlobalHttpErrorBridge /> {/* why: centralize 5xx/network handling */}
           <Layout>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -107,7 +112,7 @@ function App() {
               <Route
                 path="/me"
                 element={
-                  <Guard allow={guards.anyAuth}>
+                  <Guard allow={guards.anyAuth} redirectTo="/login">
                     <PersonalAreaPage />
                   </Guard>
                 }
@@ -134,7 +139,7 @@ function App() {
               <Route
                 path="/my-cards"
                 element={
-                  <Guard allow={guards.myCards}>
+                  <Guard allow={guards.myCards} redirectTo="/login">
                     <MyCardsPage />
                   </Guard>
                 }
