@@ -1,5 +1,11 @@
 import type { Role } from "@/types/roles";
 
+export const isGuest = (role: Role | null | undefined) =>
+  role === null || role === undefined || role === "guest";
+export const isAdmin = (role: Role | null | undefined) => role === "admin";
+export const isBusiness = (role: Role | null | undefined) =>
+  role === "business";
+
 /** Pair of IDs to check resource ownership */
 export type Ownership = {
   ownerId?: string;

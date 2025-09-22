@@ -39,18 +39,6 @@ export function useCrmMutations() {
     onSuccess: invalidate,
   });
 
-  const toggleOnline = useMutation({
-    mutationFn: (u: CRMUser) => {
-      if (isOtherAdmin(u)) throw new Error("אין אפשרות לשנות חיבור לאדמין");
-      const next = !u.isOnline;
-      return patchUser(u._id, {
-        isOnline: next,
-        ...(next ? {} : { forceLogoutAt: Date.now() }),
-      });
-    },
-    onSuccess: invalidate,
-  });
-
   const removeUser = useMutation({
     mutationFn: async (u: CRMUser) => {
       if (isOtherAdmin(u)) throw new Error("אי אפשר למחוק משתמש אדמין");
@@ -59,5 +47,5 @@ export function useCrmMutations() {
     onSuccess: invalidate,
   });
 
-  return { toggleBusiness, toggleBlock, toggleOnline, removeUser };
+  return { toggleBusiness, toggleBlock, removeUser };
 }

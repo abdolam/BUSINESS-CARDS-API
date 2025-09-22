@@ -28,7 +28,7 @@ import PersonalAreaNav, {
 } from "@/features/users/components/PersonalAreaNav";
 // import ChangePasswordForm from "@/features/users/components/ChangePasswordForm";
 // import ChangeEmailForm from "@/features/users/components/ChangeEmailForm";
-import DeleteAccountSection from "../components/DeleteAccountSection.tsx";
+import DeleteAccountSection from "../components/DeleteAccountSection";
 
 type UpdateFormValues = Omit<SignUpDto, "password" | "address"> & {
   confirmPassword?: string;

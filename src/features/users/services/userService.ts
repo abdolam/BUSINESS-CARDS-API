@@ -1,6 +1,6 @@
 import type { SignInDto, SignUpDto, User } from "@/types/user";
 import { usersApi as api } from "@/services/http";
-import { getCurrentUserIdFromStorage } from "../auth/helpers";
+import { getCurrentUserIdFromStorage, TOKEN_KEY } from "../auth/helpers";
 
 type LoginResponse =
   | string
@@ -24,7 +24,7 @@ export async function signIn(dto: SignInDto): Promise<string> {
 
   if (!token) throw new Error("No token found in login response");
 
-  localStorage.setItem("token", token);
+  localStorage.setItem(TOKEN_KEY, token);
   window.dispatchEvent(new Event("auth-changed"));
   return token;
 }
@@ -35,7 +35,7 @@ export async function signUp(dto: SignUpDto) {
 }
 
 export function signOut() {
-  localStorage.removeItem("token");
+  localStorage.removeItem(TOKEN_KEY);
   window.dispatchEvent(new Event("auth-changed")); // keep UI/auth state in sync
 }
 

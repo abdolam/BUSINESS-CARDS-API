@@ -44,7 +44,7 @@ function Guard({
 }: {
   allow: boolean;
   children: React.ReactElement;
-  redirectTo?: string; // why: better UX for auth-gated routes
+  redirectTo?: string; // better UX for auth-gated routes
 }) {
   if (allow) return children;
   if (redirectTo) return <Navigate to={redirectTo} replace />;
@@ -112,26 +112,45 @@ function App() {
               <Route
                 path="/me"
                 element={
-                  <Guard allow={guards.anyAuth} redirectTo="/login">
+                  <Guard
+                    allow={guards.anyAuth}
+                    redirectTo="/login" // unauth → login
+                  >
                     <PersonalAreaPage />
                   </Guard>
                 }
               />
-
               <Route
                 path="/create-card"
                 element={
-                  <Guard allow={guards.create}>
+                  <Guard
+                    allow={guards.create}
+                    redirectTo={guards.anyAuth ? "/" : "/login"} // authed but not business/admin → home; guests → login
+                  >
                     <CreateCard />
                   </Guard>
                 }
               />
-              <Route path="/register" element={<SignUpPage />} />
-              <Route path="/login" element={<SignInPage />} />
+              <Route
+                path="/register"
+                element={
+                  guards.anyAuth ? <Navigate to="/" replace /> : <SignUpPage />
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  guards.anyAuth ? <Navigate to="/" replace /> : <SignInPage />
+                }
+              />
+
               <Route
                 path="/favorites"
                 element={
-                  <Guard allow={guards.favorites}>
+                  <Guard
+                    allow={guards.favorites}
+                    redirectTo="/login" // only for authenticated users
+                  >
                     <FavoritesPage />
                   </Guard>
                 }
@@ -139,7 +158,10 @@ function App() {
               <Route
                 path="/my-cards"
                 element={
-                  <Guard allow={guards.myCards} redirectTo="/login">
+                  <Guard
+                    allow={guards.myCards}
+                    redirectTo={guards.anyAuth ? "/" : "/login"} // authed-not-allowed → home; guests → login
+                  >
                     <MyCardsPage />
                   </Guard>
                 }
@@ -147,7 +169,10 @@ function App() {
               <Route
                 path="/admin"
                 element={
-                  <Guard allow={guards.admin}>
+                  <Guard
+                    allow={guards.admin}
+                    redirectTo={guards.anyAuth ? "/" : "/login"}
+                  >
                     <AdminPage />
                   </Guard>
                 }
@@ -155,7 +180,10 @@ function App() {
               <Route
                 path="/crm"
                 element={
-                  <Guard allow={guards.crm}>
+                  <Guard
+                    allow={guards.crm}
+                    redirectTo={guards.anyAuth ? "/" : "/login"}
+                  >
                     <CrmPage />
                   </Guard>
                 }

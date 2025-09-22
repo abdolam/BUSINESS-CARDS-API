@@ -4,10 +4,9 @@ import { useCrmMutations, type CRMUser } from "../hooks/useCrmMutations";
 type Props = { user: CRMUser; onRequestDelete?: () => void };
 
 export default function UserActions({ user, onRequestDelete }: Props) {
-  const { toggleBusiness, toggleBlock, toggleOnline } = useCrmMutations();
+  const { toggleBusiness, toggleBlock } = useCrmMutations();
 
   const admin = !!user.isAdmin;
-  const online = !!user.isOnline;
   const blocked = !!user.isBlocked;
 
   return (
@@ -30,21 +29,6 @@ export default function UserActions({ user, onRequestDelete }: Props) {
         }
       >
         {blocked ? "בטל חסימה" : "חסום"}
-      </TableBtn>
-
-      {/* חבר / נתק */}
-      <TableBtn
-        onClick={() => toggleOnline.mutate(user)}
-        disabled={admin || toggleOnline.isPending}
-        title={
-          admin
-            ? "אין אפשרות לשנות חיבור לאדמין"
-            : online
-            ? "נתק משתמש"
-            : "חבר משתמש"
-        }
-      >
-        {online ? "נתק" : "חבר"}
       </TableBtn>
 
       {/* סטטוס עסקי */}
