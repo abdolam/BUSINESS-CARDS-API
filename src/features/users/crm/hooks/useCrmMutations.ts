@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@/types/user";
 import {
-  updateUser,
+  toggleUserStatus,
   deleteUser as deleteUserApi,
 } from "@/features/users/services/userService";
+import { getCurrentUserIdFromStorage } from "@/features/users/auth/helpers";
 
 export type CRMUser = User & {
   isBusiness?: boolean;
@@ -15,12 +16,13 @@ export type CRMUser = User & {
 
 type Patch = Record<string, unknown>;
 const patchUser = (id: string, patch: Patch) =>
-  updateUser(id, patch as unknown as Partial<User>);
+  toggleUserStatus(id, patch as unknown as Partial<User>);
 const isOtherAdmin = (u: CRMUser) => !!u.isAdmin;
 
 export function useCrmMutations() {
   const qc = useQueryClient();
   const invalidate = () => qc.invalidateQueries({ queryKey: ["crm-users"] });
+  const meId = getCurrentUserIdFromStorage() ?? "";
 
   const toggleBusiness = useMutation({
     mutationFn: (u: CRMUser) => {
@@ -42,6 +44,7 @@ export function useCrmMutations() {
   const removeUser = useMutation({
     mutationFn: async (u: CRMUser) => {
       if (isOtherAdmin(u)) throw new Error("אי אפשר למחוק משתמש אדמין");
+      if (u._id === meId) throw new Error("אי אפשר למחוק את עצמך"); // why: safety
       await deleteUserApi(u._id);
     },
     onSuccess: invalidate,

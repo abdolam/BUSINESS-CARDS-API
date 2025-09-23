@@ -70,6 +70,10 @@ export async function toggleUserStatus(id: string, body: Partial<User>) {
 }
 
 export async function deleteUser(id: string) {
+  const meId = getCurrentUserIdFromStorage();
+  if (meId && id === meId) {
+    throw new Error("אי אפשר למחוק את המשתמש המחובר");
+  }
   await api.delete(`/users/${id}`);
 }
 

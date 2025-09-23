@@ -13,3 +13,29 @@ body {
   min-height: 70px;
   display: inline-block;
 }
+/* table cell wrappers (RTL: divider on the left) */
+.th-wrap,
+.td-wrap {
+  position: relative;
+  padding-top: 0.25rem; /* ~p-1 */
+  padding-bottom: 0.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-left: 1px solid gainsboro;
+}
+
+.th-wrap::before,
+.td-wrap::before {
+  content: "";
+  position: absolute;
+  top: 0.25rem; /* space above the line */
+  bottom: 0.25rem; /* space below the line */
+  left: 0; /* RTL: put divider on the left side */
+  width: 1px;
+  background: #e5e7eb; /* tailwind: border-gray-200 / muted-200 */
+}
+
+/* optional: hide divider on the first column */
+.no-vline::before {
+  display: none;
+}

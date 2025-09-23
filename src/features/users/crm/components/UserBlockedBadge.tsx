@@ -4,6 +4,7 @@ type Props = { blocked?: boolean; className?: string };
 
 /** תג חסימה: כן / לא */
 export default function UserBlockedBadge({ blocked, className }: Props) {
+  if (blocked === undefined) return <span className={className}>—</span>;
   return (
     <Badge
       on={Boolean(blocked)}

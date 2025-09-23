@@ -4,6 +4,7 @@ type Props = { online?: boolean; className?: string };
 
 /** תג חיבור: מחובר / מנותק */
 export default function UserOnlineBadge({ online, className }: Props) {
+  if (online === undefined) return <span className={className}>—</span>;
   return (
     <Badge
       on={Boolean(online)}
