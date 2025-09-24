@@ -31,8 +31,8 @@ export default function MyCardsPage() {
   const [del, setDel] = useState<{ id: string; title: string } | null>(null);
 
   const { data: all = [], isLoading } = useQuery<UICard[]>({
-    queryKey: ["my-cards", { currentUserId }],
-    queryFn: () => fetchCards(currentUserId),
+    queryKey: ["my-cards", { owner: isAdmin ? "ALL" : currentUserId }],
+    queryFn: () => fetchCards(isAdmin ? undefined : currentUserId),
     staleTime: 60_000,
     placeholderData: (prev) => prev,
   });

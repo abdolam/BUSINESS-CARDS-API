@@ -26,6 +26,8 @@ import {
 } from "@/components/forms";
 import { withImageFallback } from "../utils/image";
 import LoadingOverlay from "@/components/common/LoadingOverlay";
+import { useToast } from "@/components/feedback/toastContext";
+import useAuth from "@/features/users/auth/useAuth";
 
 type Props = {
   cardId: string | null;
@@ -35,7 +37,7 @@ type Props = {
 
 export default function EditCardDialog({ cardId, open, onClose }: Props) {
   const qc = useQueryClient();
-
+  const { isAdmin } = useAuth();
   const methods = useForm<CreateCardDto>({
     resolver: joiResolver(createCardSchema, { abortEarly: false }),
     mode: "onChange",
@@ -106,6 +108,8 @@ export default function EditCardDialog({ cardId, open, onClose }: Props) {
     if (cardId) qc.invalidateQueries({ queryKey: ["cardApi", cardId] });
   };
 
+  const { error: toastError, success: toastSuccess } = useToast();
+
   const mutation = useMutation<Card, unknown, CreateCardDto>({
     mutationFn: async (payload: CreateCardDto) => {
       if (!cardId) throw new Error("No cardId");
@@ -116,9 +120,23 @@ export default function EditCardDialog({ cardId, open, onClose }: Props) {
       };
       return updateCard(cardId, cleaned);
     },
+
     onSuccess: (updated) => {
       patchAllCachesWith(updated);
+      const success = toastSuccess;
+      success("הכרטיס נשמר בהצלחה");
       onClose();
+    },
+
+    onError: (err) => {
+      // Minimal, local feedback; keep dialog open
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
+      const msg =
+        status === 401 || status === 403
+          ? "אין לך הרשאה לערוך את הכרטיס הזה"
+          : "עריכה נכשלה. נסה/י שוב.";
+      toastError(msg);
     },
   });
 
@@ -155,7 +173,17 @@ export default function EditCardDialog({ cardId, open, onClose }: Props) {
         ) : (
           <FormProvider {...methods}>
             <form
-              onSubmit={handleSubmit((values) => mutation.mutate(values))}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (isAdmin) {
+                  // Admin: submit without RHF/Joi blocking (server enforces)
+                  const values = methods.getValues();
+                  mutation.mutate(values);
+                } else {
+                  // Others: keep normal validation flow
+                  void handleSubmit((values) => mutation.mutate(values))(e);
+                }
+              }}
               noValidate
               className="flex-1 min-h-0 flex flex-col"
             >
@@ -237,8 +265,8 @@ export default function EditCardDialog({ cardId, open, onClose }: Props) {
                 <ActionsBar
                   submitting={mutation.isPending}
                   canSubmit={true}
-                  isValid={methods.formState.isValid}
-                  isSubmitting={methods.formState.isSubmitting}
+                  isValid={isAdmin ? true : methods.formState.isValid}
+                  isSubmitting={mutation.isPending} // reflect actual network
                   onCancel={onClose}
                   submitLabel="שמור"
                   cancelLabel="ביטול"

@@ -45,7 +45,7 @@ function attachResponseInterceptors(api: AxiosInstance) {
         error?.message ||
         "Network error";
 
-      if (status === 401 || status === 403) {
+      if (status === 401) {
         localStorage.removeItem(TOKEN_KEY);
         window.dispatchEvent(new Event("auth-changed"));
       }

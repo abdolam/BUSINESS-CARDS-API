@@ -69,9 +69,9 @@ export async function toggleUserStatus(id: string, body: Partial<User>) {
   return data;
 }
 
-export async function deleteUser(id: string) {
+export async function deleteUser(id: string, opts?: { allowSelf?: boolean }) {
   const meId = getCurrentUserIdFromStorage();
-  if (meId && id === meId) {
+  if (!opts?.allowSelf && meId && id === meId) {
     throw new Error("אי אפשר למחוק את המשתמש המחובר");
   }
   await api.delete(`/users/${id}`);
