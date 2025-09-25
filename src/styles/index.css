@@ -39,3 +39,12 @@ body {
 .no-vline::before {
   display: none;
 }
+/* Hide scrollbars while keeping scrollable (used by city/street dropdowns) */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.no-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}

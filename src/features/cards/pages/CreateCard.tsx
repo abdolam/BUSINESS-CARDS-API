@@ -208,7 +208,7 @@ export default function CreateCard() {
             </div>
 
             {/* Contact */}
-            <ContactFields />
+            <ContactFields className="grid grid-cols-1 md:grid-cols-2 gap-4" />
 
             {/* Web */}
             <div>

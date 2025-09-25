@@ -197,17 +197,25 @@ export default function AccessibilityMenu() {
         </div>
         <div
           id="a11y-feedback-panel"
-          className={`u-collapse absolute top-4 right-full mr-4 z-0 w-fit min-h-fit overflow-y-auto
-                      rounded-xl border border-gray-300 dark:border-gray-700
-                    bg-white/95 dark:bg-gray-900/95 shadow-2xl p-5
-                      transition-all duration-300 will-change-[opacity,transform]
-                      motion-reduce:transition-none motion-reduce:transform-none
-                    ${
-                      showFeedback
-                        ? "opacity-100 translate-x-0 pointer-events-auto"
-                        : "opacity-0 translate-x-2 pointer-events-none"
-                    }
-                    `}
+          className={`u-collapse
+              /* Mobile: fixed bottom-sheet centered */
+              fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+1rem)]
+              w-[min(36rem,100vw-1.5rem)] max-h-[70vh]
+              z-[1001]
+              /* Desktop (md+): restore side fly-out beside the menu */
+              md:absolute md:top-4 md:right-full md:mr-4 md:w-fit
+              /* Visuals */
+              overflow-y-auto no-scrollbar
+              rounded-xl border border-gray-300 dark:border-gray-700
+              bg-white/95 dark:bg-gray-900/95 shadow-2xl p-5
+              transition-all duration-300 will-change-[opacity,transform]
+              motion-reduce:transition-none motion-reduce:transform-none
+              ${
+                showFeedback
+                  ? "opacity-100 translate-x-0 pointer-events-auto"
+                  : "opacity-0 translate-x-2 pointer-events-none"
+              }
+            `}
           data-open={showFeedback ? "true" : "false"}
         >
           <A11yContactForm onClose={() => setShowFeedback(false)} />
