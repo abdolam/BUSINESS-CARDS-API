@@ -27,7 +27,7 @@ export const emailSchema = Joi.string()
 const strongPasswordSchema = Joi.string()
   .min(8)
   .max(1024)
-  .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*_])/)
+  .pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[^\w\s]).{8,64}$/)
   .required()
   .empty("")
   .messages({
@@ -35,7 +35,7 @@ const strongPasswordSchema = Joi.string()
     "string.min": msgs.min,
     "string.max": msgs.max,
     "string.pattern.base":
-      "הסיסמה חייבת לכלול אות גדולה, אות קטנה, ספרה ותו מיוחד (!@#$%^&*_)",
+      "הסיסמה חייבת להכיל 8–64 תווים, אות גדולה, אות קטנה, מספר ותו מיוחד",
   });
 
 const phoneSchema = Joi.string()
